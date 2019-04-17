@@ -1,0 +1,169 @@
+---
+docker_network_name_backend:  hexaa_backend
+docker_network_name_frontend: hexaa_frontend
+docker_image_tag_frontend: staging
+docker_image_tag_backend:  staging
+
+docker_restart_policy: no
+
+mysql_root_password: root
+
+hexaa_backend_host_volume: /opt/hexaa-backend/
+hexaa_frontend_host_volume: /opt/hexaa-frontend/
+
+
+#: ==================
+# URL parameters
+#: ==================
+
+HEXAA_BACKEND_URL_PROTO:   https
+HEXAA_BACKEND_URL_HOST:  hexaa.local
+HEXAA_BACKEND_URL_PATH:    /hexaa-backend/
+HEXAA_BACKEND_URL: "{{HEXAA_BACKEND_URL_PROTO}}://{{HEXAA_BACKEND_URL_HOST}}{{HEXAA_BACKEND_URL_PATH}}"
+
+HEXAA_FRONTEND_URL_PROTO:   https
+HEXAA_FRONTEND_URL_HOST:  "{{HEXAA_BACKEND_URL_HOST}}"
+HEXAA_FRONTEND_URL_PATH:    /
+HEXAA_FRONTEND_URL: "{{HEXAA_FRONTEND_URL_PROTO}}://{{HEXAA_FRONTEND_URL_HOST}}{{HEXAA_FRONTEND_URL_PATH}}"
+
+# enable generating self-signed certificates if the expected files don't exist
+# (not recommended for production use)
+HEXAA_GENERATE_SELFSIGNED: yes
+
+
+# ==========================================================================#
+#  ------------------------------------------------------------------------ #
+#  | Frontend config                                                      | #
+#  ------------------------------------------------------------------------ #
+# ==========================================================================#
+
+# path to folder on the target with fullchain.pem and privkey.pem in it:
+HEXAA_FRONTEND_CERTIFICATE_PATH: "{{ playbook_dir }}/local_files/apache"
+
+SHIBBOLETH_SP_ENTITYID: "https://{{HEXAA_FRONTEND_URL_HOST}}/shibboleth"
+
+# path to folder with sp-cert.pem and sp-key.pem
+# (generating: shib-keygen -f -u _shibd -h $HOSTNAME -y 3 -e $ENTITY_ID -o /etc/shibboleth)
+SHIBBOLETH_CERTIFICATE_PATH: "{{ playbook_dir }}/local_files/shib"
+
+# idp or discovery
+SHIBBOLETH_LOGIN_TYPE: discovery
+
+#SHIBBOLETH_DISCOVERY_SERVICE: https://discovery.eduid.hu
+SHIBBOLETH_DISCOVERY_SERVICE: http://metadata.hexaa.local:8080/role/idp.ds
+#SHIBBOLETH_IDP_URL: https://idp1.hexaa.local/simplesaml/saml2/idp/metadata.php
+
+SHIBBOLETH_METADATA_PROVIDERS:
+#  - type: dynamic
+#    url_template: https://mdx.domain.tld/entities/$entityID
+#    ignore_transport: true
+#    cert_path: certs/xyz.crt
+#  - type: XML
+#    url: https://domain.tld/idp/saml2/idp/metadata.php
+  - type: dynamic
+    url_template: http://metadata.hexaa.local:8080/entities/$entityID
+    ignore_transport: true
+
+
+# ==========================================================================#
+#  ------------------------------------------------------------------------ #
+#  | Backend config                                                       | #
+#  ------------------------------------------------------------------------ #
+# ==========================================================================#
+
+#  Database parameters
+# =====================
+#HEXAA_BACKEND_DATABASE_DRIVER:   pdo_mysql
+#HEXAA_BACKEND_DATABASE_HOST:     mysql
+#HEXAA_BACKEND_DATABASE_PORT:     3306
+#HEXAA_BACKEND_DATABASE_NAME:     hexaa
+#HEXAA_BACKEND_DATABASE_VERSION:  5.7
+#HEXAA_BACKEND_DATABASE_USER:     hexaa
+#HEXAA_BACKEND_DATABASE_PASSWORD: hexaa
+
+#: ==================
+# Mailer parameters
+#: ==================
+HEXAA_MAILER_TRANSPORT: smtp
+HEXAA_MAILER_HOST:      hexaa.local
+HEXAA_MAILER_PORT:      1025
+HEXAA_MAILER_USER:      ~
+HEXAA_MAILER_PASSWORD:  ~
+
+#: =====================
+# Memcached parameters
+#: =====================
+#HEXAA_BACKEND_MEMCACHED_DSN:  memcached
+#HEXAA_BACKEND_MEMCACHED_PORT: 11211
+
+#: ========
+# Logging
+#: ========
+# note: don't write / at the end!
+#HEXAA_BACKEND_LOG_DIR: /tmp
+
+# Setting this option to "true" will oveerride the previous option for production environment only.
+#HEXAA_BACKEND_LOG_TO_STDERR: true
+
+#: ===========
+# Masterkeys
+#: ===========
+# You may set any number of keys by adding items to this mapping.
+
+HEXAA_BACKEND_MASTERKEY:
+  defaultMasterKey: abcd
+  # for SimpleSAMLPHP
+  otherMasterKey: xyzw
+
+#: =============
+# Hexaa admins
+#: =============
+HEXAA_BACKEND_ADMINS:
+  - betauser@example.com
+
+#: ==============
+# Misc settings
+#: ==============
+# you can generate a secret using:
+# tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs: 32 count=1 2>/dev/null;echo
+HEXAA_BACKEND_SECRET:
+
+# More origin strings may be provided with the HEXAA_BACKEND_CORS_ORIGIN_ prefix.
+HEXAA_BACKEND_CORS_ORIGIN_DEFAULT: nullstring
+
+HEXAA_BACKEND_ENTITLEMENT_URI_PREFIX: urn:org:hexaa.local:hexaa
+
+# comma separated list:
+HEXAA_BACKEND_METADATA_SOURCE_URLS: http://metadata.hexaa.local:8080/entities
+
+
+HEXAA_BACKEND_PRINCIPAL_EXPIRATION_LIMIT: 1839
+
+HEXAA_BACKEND_PUBLIC_ATTRIBUTE_SPECIFICATION_ENABLED: true
+
+HEXAA_BACKEND_FROM_ADDRESS: hexaa@example.com
+
+HEXAA_BACKEND_AUTH_COOKIE_NAME: hexaa_auth
+
+#SENTRY_DSN: ~
+
+#  SimpleSAMLphp AA config
+# =========================
+SSP_ENTITY_ID: "https://{{ HEXAA_BACKEND_URL_HOST }}/aa"
+
+SSP_ORG_NAME: Localhost HEXAA
+SSP_ORG_DISPLAY_NAME: Localhost HEXAA
+SSP_ORG_URL: https://localhost/
+
+SSP_SECRET_SALT: --------REPLACE-THIS------------
+SSP_ADMIN_PASSWD: ~
+SSP_LOGLEVEL: DEBUG
+
+SSP_METADATA_PROVIDERS:
+  - type: mdq
+    server: http://metadata.hexaa.local:8080
+
+# Path on host to dir with `aa.server.key.pem` and `aa.server.cert.pem` in it
+# generating:
+# openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
+SSP_CERT_PATH: "{{ playbook_dir }}/local_files/ssp"

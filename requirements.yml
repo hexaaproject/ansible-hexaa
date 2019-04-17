@@ -1,0 +1,7 @@
+- geerlingguy.docker
+- geerlingguy.pip
+
+- src: https://github.com/hexaaproject/ansible-role-hexaa-frontend.git
+  scm: git
+- src: https://github.com/hexaaproject/ansible-role-hexaa-backend.git
+  scm: git
