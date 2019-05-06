@@ -7,7 +7,7 @@ Ansible playbook for installing a complete HEXAA environment.
 
 Requirements:
 - a recent version of Docker (`docker.io` or `docker-ce` package)
-- Ansible (`pip3 install ansible`)
+- Ansible (`pip3 install ansible\>=2.7`)
 
 Installing the roles:
 
@@ -29,7 +29,7 @@ Your user needs to:
 
 You should add an entry like this to your `/etc/hosts` config:
 ```
-127.0.0.1   hexaa.local metadata.hexaa.local idp1.local idp2.local
+127.0.0.1	hexaa.local metadata.hexaa.local idp1.hexaa.local idp2.hexaa.local sp1.hexaa.local sp2.hexaa.local mail.hexaa.local
 ```
 
 **Running:**
@@ -60,7 +60,7 @@ ansible-playbook -i inventory <env_name>.yml
 
 **Backup:**
 
-You only need to make backups of the `/opt/hexaa/mysql`.
+You only need to make backups of the contents of `/opt/hexaa/mysql`.
 
 
 ## Development

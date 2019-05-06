@@ -1,7 +1,6 @@
 ---
 - name: Install HEXAA to local host
   hosts: local
-  tasks:
 
   roles:
      - role: ansible-role-hexaa-backend
@@ -10,3 +9,4 @@
      - role: ansible-role-hexaa-frontend
        tags:
          - frontend
+- import_playbook: local_test_env.yml
