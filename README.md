@@ -38,14 +38,30 @@ You should add an entry like this to your `/etc/hosts` config:
 ansible-playbook -i inventory local.yml
 ```
 
+You can restart with a blank environment by removing the containers and
+generated files (**Warning:** this deletes the database content and
+modifications made inside the containers):
+
+```bash
+docker rm -f sp1.hexaa.local sp2.hexaa.local \
+    idp1.hexaa.local idp2.hexaa.local \
+    metadata.hexaa.local nginx-proxy \
+    hexaa-backend hexaa-backend-ssp-aa hexaa-backend-web \
+    hexaa-frontend hexaa-frontend-web \
+    hexaa-service-entityids-generator
+find local_files -type f \! -name '.git*' -exec rm {} \;
+```
+
 
 ### Production environment
 
 Your should:
 
- * copy and customize `group_vars/local`,
- * copy `local.yml` to a matching name (optionally remove the tasks)
- * add your installation target(s) to `inventory` in matching section(s)
+ * Copy and customize `group_vars/prod_template`,
+ * Copy `prod_template.yml` to a matching name,
+ * Set your installation target in `inventory` in the `prod` section.
+   `ansible_become=true` is useful if the remote login user has sudo
+   rights.
 
 If you plan to version control your configuration, you should consider
 putting master keys and secrets into an Ansible vault (see the

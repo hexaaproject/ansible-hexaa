@@ -1,0 +1,8 @@
+---
+- name: Install HEXAA to production
+  hosts: prod
+  vars_files:
+  #   - group_vars/prod_secrets.yml
+  roles:
+     - role: ansible-role-hexaa-backend
+     - role: ansible-role-hexaa-frontend
