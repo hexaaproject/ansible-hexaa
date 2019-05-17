@@ -46,6 +46,37 @@
     - set_fact:
         gateway_ip: "{{ docker_network.IPAM.Config[0].Gateway }}"
 
+    - name: check if webserver cert exists
+      stat:
+        path: "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.crt"
+      register: webserver_cert
+
+    - name: check if webserver privkey exists
+      stat:
+        path: "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.key"
+      register: webserver_privkey
+
+    - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+      openssl_privatekey:
+        path: "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.key"
+      when:
+        - not webserver_privkey.stat.exists
+    - name: Generate an OpenSSL Certificate Signing Request
+      openssl_csr:
+        path:             "{{ PROXY_CERTIFICATE_PATH }}/csr.csr"
+        privatekey_path:  "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.key"
+        common_name:      "{{ LOCAL_DOMAIN }}"
+        subject_alt_name: "DNS:*.{{ LOCAL_DOMAIN }}"
+      when:
+        - not webserver_cert.stat.exists
+    - name: Generate a Self Signed OpenSSL certificate
+      openssl_certificate:
+        path:            "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.crt"
+        privatekey_path: "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.key"
+        csr_path:        "{{ PROXY_CERTIFICATE_PATH }}/csr.csr"
+        provider: selfsigned
+      when:
+        - not webserver_cert.stat.exists
 
     - name: Ensure nginx-proxy container is started
       docker_container:
@@ -72,7 +103,7 @@
           - "127.0.0.1:1025:1025"
           - "127.0.0.1:8025:8025"
         env:
-          #VIRTUAL_HOST: "{{ VIRTUAL_HOST}}"
+          VIRTUAL_HOST: "mail.{{ LOCAL_DOMAIN }}"
           VIRTUAL_PORT: 8025
         networks:
           - name: "{{ docker_network_name_backend }}"
@@ -162,8 +193,8 @@
         SUPPORT_CONTACT: "{{ item.name }}@{{ LOCAL_DOMAIN }}"
         SUPPORT_CONTACT_SURNAME: "{{ item.name }} support"
         NOSSL: true
-        BEHIND_SSL_TERMINATOR_PROXY: true
-        METADATA_NOSSL_ENDPOINTS: ''
+        BEHIND_SSL_TERMINATOR_PROXY: "{{ LOCAL_PROTO == 'http' }}"
+        METADATA_NOSSL_ENDPOINTS: "{{'' if LOCAL_PROTO == 'https' else true }}"
         LOGLEVEL: DEBUG
         ETC_HOSTS: "{{ HOSTS }}"
       with_items: "{{ LOCAL_SPS }}"
