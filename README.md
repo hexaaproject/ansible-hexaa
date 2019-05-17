@@ -2,8 +2,21 @@
 
 Ansible playbook for installing a complete HEXAA environment.
 
+# Table of Contents
 
-## Usage
+- [ansible-hexaa](#ansible-hexaa)
+- [Table of Contents](#table-of-contents)
+- [Usage](#usage)
+    - [Local environment](#local-environment)
+        - [Hostname](#hostname)
+        - [Running](#running)
+        - [Web access](#web-access)
+    - [Production environment](#production-environment)
+        - [Running](#running-1)
+        - [Backup](#backup)
+- [Development](#development)
+
+# Usage
 
 Requirements:
 - a recent version of Docker (`docker.io` or `docker-ce` package)
@@ -16,23 +29,28 @@ ansible-galaxy install -r requirements.yml -p ./roles
 ```
 
 
-### Local environment
+## Local environment
 
-Your user needs to:
+This setup is intended for local development and trying out HEXAA's
+features. The `local.yml` playbook installs:
+* the backend and frontend of HEXAA with all their dependencies,
+* a metadata exchange,
+* two identity providers,
+* two service providers (for testing the release of attributes by HEXAA,
+  SSP AA)
+* a local SMTP server with web interface for testing invitations and
+  enabling services inside HEXAA.
 
-* be a member of the `docker` group
-* be able to use `sudo` without password (`NOPASSWD` in `/etc/sudoers`)
-  or you need to provide your password to Ansible:
-  use the `--ask-become-pass` flag and enter it when asked.
+Your user needs to be a member of the `docker` group
 
-**Hostname:**
+### Hostname
 
 You should add an entry like this to your `/etc/hosts` config:
 ```
 127.0.0.1	hexaa.local metadata.hexaa.local idp1.hexaa.local idp2.hexaa.local sp1.hexaa.local sp2.hexaa.local mail.hexaa.local
 ```
 
-**Running:**
+### Running
 
 ```sh
 ansible-playbook -i inventory local.yml
@@ -52,8 +70,24 @@ docker rm -f sp1.hexaa.local sp2.hexaa.local \
 find local_files -type f \! -name '.git*' -exec rm {} \;
 ```
 
+### Web access
 
-### Production environment
+If you didn't change the default config, after running the playbook, you
+can access the following services:
+
+* HEXAA frontend: https://hexaa.local
+* Service providers:
+    * https://sp1.hexaa.local
+    * https://sp2.hexaa.local
+* SSP IdP:
+    * https://idp1.hexaa.local/simplesaml/
+    * https://idp2.hexaa.local/simplesaml/
+* Metadata exchange: https://metadata.hexaa.local/
+* SSP AA: https://hexaa.local:8443/simplesaml/
+* Local mail: https://mail.hexaa.local
+
+
+## Production environment
 
 Your should:
 
@@ -63,23 +97,32 @@ Your should:
    `ansible_become=true` is useful if the remote login user has sudo
    rights.
 
+If multiple people will run the playboy, we recommend using one user to
+login on the target host or setting `ansible_become=true` to prevent
+unnecessary ownership changes and errors.
+
+If you choose to latter, the login user(s) needs to have `sudo` rights
+without password (`NOPASSWD` in `/etc/sudoers`) or you need to provide
+your password to Ansible: use the `--ask-become-pass` flag and enter it
+when asked.
+
 If you plan to version control your configuration, you should consider
-putting master keys and secrets into an Ansible vault (see the
+putting the master keys and secrets into an Ansible vault (see the
 `ansible-vault(1)` manpage and the `--vault-password-file` option of
 `ansible-playbook`).
 
-**Running:**
+### Running
 
 ```sh
 ansible-playbook -i inventory <env_name>.yml
 ```
 
-**Backup:**
+### Backup
 
 You only need to make backups of the contents of `/opt/hexaa/mysql`.
 
 
-## Development
+# Development
 
 You can fork the playbook and role repositories, then clone the two
 roles into the subdirectory, and make changes to the 3 repositories at
