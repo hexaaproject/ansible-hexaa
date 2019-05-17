@@ -1,12 +1,20 @@
 ---
+
+- name: Create env network and read host IP
+  hosts: local
+  tasks:
+    - name: Ensure network exists
+      docker_network:
+        name: hexaa_env
+    - set_fact:
+        gateway_ip: "{{ docker_network.IPAM.Config[0].Gateway }}"
+    - debug:
+        msg: "Local IP: {{ gateway_ip }}"
+  tags: [always]
+
 - name: Install HEXAA to local host
   hosts: local
-
   roles:
      - role: ansible-role-hexaa-backend
-       tags:
-         - backend
      - role: ansible-role-hexaa-frontend
-       tags:
-         - frontend
 - import_playbook: local_test_env.yml

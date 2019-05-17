@@ -1,50 +1,7 @@
 - name: Local environment for testing HEXAA
   hosts: local
   tags: [env]
-  vars:
-    IDP1_DOMAIN: "idp1.{{ LOCAL_DOMAIN }}"
-    IDP2_DOMAIN: "idp2.{{ LOCAL_DOMAIN }}"
-    SIMPLESAMLPHP_ADMIN_PASSWORD: Pass123
-    SIMPLESAMLPHP_SECRET_SALT:    FVZCYRFNZYCUC_FRPERG_FNYG
-
-    MDX_DOMAIN: "metadata.{{ LOCAL_DOMAIN }}"
-    MDX_URL:   "{{ LOCAL_PROTO }}://{{ MDX_DOMAIN }}:{{ LOCAL_PORT }}"
-    DS_DATADIR: "{{ playbook_dir }}/local_files/ds"
-    DS_METADATA_SOURCES:
-      - "{{ LOCAL_PROTO }}://{{ SP1_DOMAIN }}/Shibboleth.sso/Metadata"
-      - "{{ LOCAL_PROTO }}://{{ SP2_DOMAIN }}/Shibboleth.sso/Metadata"
-      - "{{ LOCAL_PROTO }}://{{ IDP1_DOMAIN }}/simplesaml/saml2/idp/metadata.php"
-      - "{{ LOCAL_PROTO }}://{{ IDP2_DOMAIN }}/simplesaml/saml2/idp/metadata.php"
-      # HEXAA frontend:
-      #- http://{{ LOCAL_DOMAIN }}:{{ LOCAL_PORT }}/Shibboleth.sso/Metadata
-      - "{{ LOCAL_PROTO }}://{{ LOCAL_DOMAIN }}/Shibboleth.sso/Metadata"
-      #- https://{{ LOCAL_DOMAIN }}:8443/simplesaml/module.php/aa/metadata.php
-      - https://{{ LOCAL_DOMAIN }}:8443/simplesaml/module.php/aa/metadata.php
-
-    SP1_DOMAIN: "sp1.{{ LOCAL_DOMAIN }}"
-    SP2_DOMAIN: "sp2.{{ LOCAL_DOMAIN }}"
-    SP1_ENTITY_ID: "{{ LOCAL_PROTO }}://{{ SP1_DOMAIN }}:{{ LOCAL_PORT }}/shibboleth"
-    SP2_ENTITY_ID: "{{ LOCAL_PROTO }}://{{ SP2_DOMAIN }}:{{ LOCAL_PORT }}/shibboleth"
-    SP_ATTRIBUTE_RESOLVERS: "<AttributeResolver type='SimpleAggregation' attributeId='principalName' format='urn:oid:1.3.6.1.4.1.5923.1.1.1.6'><Entity>{{ SSP_ENTITY_ID }}</Entity><Attribute Name='urn:oid:1.3.6.1.4.1.5923.1.1.1.7' NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri' FriendlyName='eduPersonEntitlement'/></AttributeResolver>"
-
-    HOSTS:
-      hexaa.local: "{{ gateway_ip }}"
-      idp1.hexaa.local: "{{ gateway_ip }}"
-      idp2.hexaa.local: "{{ gateway_ip }}"
-      sp1.hexaa.local: "{{ gateway_ip }}"
-      sp2.hexaa.local: "{{ gateway_ip }}"
-
-    PROXY_CERTIFICATE_PATH: "{{ playbook_dir }}/local_files/nginx-proxy"
   tasks:
-    - name: Ensure network exists
-      docker_network:
-        name: "{{ item }}"
-      with_items:
-        - elknet
-        - hexaa_env
-
-    - set_fact:
-        gateway_ip: "{{ docker_network.IPAM.Config[0].Gateway }}"
 
     - name: check if webserver cert exists
       stat:
@@ -145,10 +102,9 @@
           VIRTUAL_HOST: "{{ VIRTUAL_HOST}}"
         networks:
           - name: hexaa_env
-          - name: elknet
           - name: "{{ docker_network_name_backend }}"
           - name: "{{ docker_network_name_frontend }}"
-        etc_hosts: "{{ HOSTS }}"
+        etc_hosts: "{{ ETC_HOSTS }}"
       vars:
         VIRTUAL_HOST: "{{ MDX_DOMAIN }}"
       tags:
@@ -196,5 +152,6 @@
         BEHIND_SSL_TERMINATOR_PROXY: "{{ LOCAL_PROTO == 'http' }}"
         METADATA_NOSSL_ENDPOINTS: "{{'' if LOCAL_PROTO == 'https' else true }}"
         LOGLEVEL: DEBUG
-        ETC_HOSTS: "{{ HOSTS }}"
+        NETWORKS:
+          - name: hexaa_env
       with_items: "{{ LOCAL_SPS }}"

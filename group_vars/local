@@ -1,5 +1,9 @@
 ---
 
+#: ==================
+# Local environment
+#: ==================
+
 LOCAL_DOMAIN: hexaa.local
 # Must be port 80/443 because pyFF discards ports in the metadata
 LOCAL_PORT_HTTP: 80
@@ -16,8 +20,47 @@ LOCAL_SPS:
   - { name: "sp1.{{ LOCAL_DOMAIN }}", port: 8101 }
   - { name: "sp2.{{ LOCAL_DOMAIN }}", port: 8102 }
 
+# for connecting through reverse proxy
 LOCAL_MDX_HOST:   "{{ LOCAL_PROTO }}://metadata.{{ LOCAL_DOMAIN }}"
+# for connecting between containers directly
 LOCAL_MDX_DOCKER: "http://metadata.{{ LOCAL_DOMAIN }}:8080"
+
+IDP1_DOMAIN: "idp1.{{ LOCAL_DOMAIN }}"
+IDP2_DOMAIN: "idp2.{{ LOCAL_DOMAIN }}"
+SIMPLESAMLPHP_ADMIN_PASSWORD: Pass123
+SIMPLESAMLPHP_SECRET_SALT:    FVZCYRFNZYCUC_FRPERG_FNYG
+
+MDX_DOMAIN: "metadata.{{ LOCAL_DOMAIN }}"
+MDX_URL:   "{{ LOCAL_PROTO }}://{{ MDX_DOMAIN }}:{{ LOCAL_PORT }}"
+DS_DATADIR: "{{ playbook_dir }}/local_files/ds"
+DS_METADATA_SOURCES:
+    - "{{ LOCAL_PROTO }}://{{ SP1_DOMAIN }}/Shibboleth.sso/Metadata"
+    - "{{ LOCAL_PROTO }}://{{ SP2_DOMAIN }}/Shibboleth.sso/Metadata"
+    - "{{ LOCAL_PROTO }}://{{ IDP1_DOMAIN }}/simplesaml/saml2/idp/metadata.php"
+    - "{{ LOCAL_PROTO }}://{{ IDP2_DOMAIN }}/simplesaml/saml2/idp/metadata.php"
+    # HEXAA frontend:
+    - "{{ LOCAL_PROTO }}://{{ LOCAL_DOMAIN }}/Shibboleth.sso/Metadata"
+    - https://{{ LOCAL_DOMAIN }}:8443/simplesaml/module.php/aa/metadata.php
+
+SP1_DOMAIN: "sp1.{{ LOCAL_DOMAIN }}"
+SP2_DOMAIN: "sp2.{{ LOCAL_DOMAIN }}"
+SP1_ENTITY_ID: "{{ LOCAL_PROTO }}://{{ SP1_DOMAIN }}:{{ LOCAL_PORT }}/shibboleth"
+SP2_ENTITY_ID: "{{ LOCAL_PROTO }}://{{ SP2_DOMAIN }}:{{ LOCAL_PORT }}/shibboleth"
+SP_ATTRIBUTE_RESOLVERS: "<AttributeResolver type='SimpleAggregation' attributeId='principalName' format='urn:oid:1.3.6.1.4.1.5923.1.1.1.6'><Entity>{{ SSP_ENTITY_ID }}</Entity><Attribute Name='urn:oid:1.3.6.1.4.1.5923.1.1.1.7' NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri' FriendlyName='eduPersonEntitlement'/></AttributeResolver>"
+
+ETC_HOSTS:
+    hexaa.local: "{{ gateway_ip }}"
+    idp1.hexaa.local: "{{ gateway_ip }}"
+    idp2.hexaa.local: "{{ gateway_ip }}"
+    sp1.hexaa.local: "{{ gateway_ip }}"
+    sp2.hexaa.local: "{{ gateway_ip }}"
+docker_etc_hosts: "{{ ETC_HOSTS }}"
+
+PROXY_CERTIFICATE_PATH: "{{ playbook_dir }}/local_files/nginx-proxy"
+
+#: ==================
+# Docker and host settings
+#: ==================
 
 docker_network_name_backend:  hexaa_backend
 docker_network_name_frontend: hexaa_frontend
