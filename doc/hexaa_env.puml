@@ -1,0 +1,57 @@
+@startuml
+package "Hexaa local env" {
+
+    package "HEXAA" {
+        interface "REST API" as rest
+        interface "SAML AA" as aa
+    }
+
+    package "env" {
+        interface "Metadata aggregation" as metadata
+    }
+
+
+    package "HEXAA" {
+
+        rest - [hexaa-backend]
+        aa - [hexaa-backend-ssp-aa]
+
+        [hexaa-backend-ssp-aa]
+        note top: SimpleSAMLphp
+
+        [hexaa-backend-ssp-aa] ..> rest
+
+        [hexaa-backend-ssp-aa]  <..> metadata
+
+
+        [hexaa-frontend] ..> rest
+        [hexaa-frontend] <..> metadata
+
+    }
+    note top of HEXAA: ansible-role-backend + ansible-role-frontend
+
+
+    package "env" {
+
+
+        [idp{1,2}]
+        note top: SimpleSAMLphp
+
+        [sp{1,2}]
+        note top: Shibboleth + attributes
+
+        [mdx]
+        note top: pyFF
+
+        metadata - [mdx]
+        [idp{1,2}] <..> metadata
+        [sp{1,2}]  <..> metadata
+        [sp{1,2}]  <.. aa
+
+        [mail]
+        note top: MailHog
+    }
+    note top of env: local_test_env.yml + ansible-role-attributes
+
+}
+@enduml

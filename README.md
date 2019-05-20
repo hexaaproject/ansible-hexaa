@@ -136,4 +136,12 @@ git clone https://github.com/hexaaproject/ansible-role-hexaa-frontend.git
 git clone https://github.com/hexaaproject/ansible-role-hexaa-backend.git
 ```
 
-![HEXAA core components](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_core.puml)
+# Architecture
+
+Components installed by two main roles:
+
+![HEXAA core components](http://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_core.puml)
+
+Local environment components and their (somewhat simplified) interactions:
+
+![HEXAA environment components](http://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_env.puml)
