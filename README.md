@@ -136,29 +136,4 @@ git clone https://github.com/hexaaproject/ansible-role-hexaa-frontend.git
 git clone https://github.com/hexaaproject/ansible-role-hexaa-backend.git
 ```
 
-```plantuml
-@startuml
-package "Hexaa CORE" {
-    package "backend" {
-        [hexaa-backend-web]
-        note top: Nginx
-        [hexaa-backend]
-        note top: PHP-fpm
-        [hexaa-service-entityids-generator]
-        [mysql]
-        [memcached]
-        [hexaa-ssp-aa]
-        note top: SimpleSAMLphp
-    }
-    note top of backend: ansible-role-backend
-    package "frontend" {
-        [hexaa-frontend]
-        note top: PHP-fpm
-        [hexaa-frontend-web]
-        note top: Apache HTTPD + Shibboleth SP
-    }
-    note top of frontend: ansible-role-frontend
-}
-
-@enduml
-```
+![HEXAA core components](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_core.puml)
