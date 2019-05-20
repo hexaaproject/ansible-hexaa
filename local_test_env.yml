@@ -61,7 +61,7 @@
           - "127.0.0.1:8025:8025"
         env:
           VIRTUAL_HOST: "mail.{{ LOCAL_DOMAIN }}"
-          VIRTUAL_PORT: 8025
+          VIRTUAL_PORT: "8025"
         networks:
           - name: "{{ docker_network_name_backend }}"
           - name: "{{ docker_network_name_frontend }}"
@@ -148,9 +148,9 @@
         ATTRIBUTE_RESOLVERS:         "{{ SP_ATTRIBUTE_RESOLVERS }}"
         SUPPORT_CONTACT: "{{ item.name }}@{{ LOCAL_DOMAIN }}"
         SUPPORT_CONTACT_SURNAME: "{{ item.name }} support"
-        NOSSL: true
-        BEHIND_SSL_TERMINATOR_PROXY: "{{ LOCAL_PROTO == 'http' }}"
-        METADATA_NOSSL_ENDPOINTS: "{{'' if LOCAL_PROTO == 'https' else true }}"
+        NOSSL: "true"
+        BEHIND_SSL_TERMINATOR_PROXY:    "{{ 'true' if LOCAL_PROTO == 'https' else '' }}"
+        METADATA_NOSSL_ENDPOINTS: "{{'true' if LOCAL_PROTO == 'http' else '' }}"
         LOGLEVEL: DEBUG
         NETWORKS:
           - name: hexaa_env
