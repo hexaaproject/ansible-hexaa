@@ -35,7 +35,8 @@ This setup is intended for local development and trying out HEXAA's
 features. The `local.yml` playbook installs:
 * the backend and frontend of HEXAA with all their dependencies,
 * a metadata exchange,
-* two identity providers,
+* two identity providers (with two accounts each, `user1:user1pass` and
+  `user2:user2pass`),
 * two service providers (for testing the release of attributes by HEXAA,
   SSP AA)
 * a local SMTP server with web interface for testing invitations and
@@ -82,8 +83,8 @@ can access the following services:
 * SSP IdP:
     * https://idp1.hexaa.local/simplesaml/
     * https://idp2.hexaa.local/simplesaml/
-* Metadata exchange: https://metadata.hexaa.local/
 * SSP AA: https://hexaa.local:8443/simplesaml/
+* Metadata exchange: https://metadata.hexaa.local/
 * Local mail: https://mail.hexaa.local
 
 
@@ -97,7 +98,7 @@ Your should:
    `ansible_become=true` is useful if the remote login user has sudo
    rights.
 
-If multiple people will run the playboy, we recommend using one user to
+If multiple people will run the playbook, we recommend using one user to
 login on the target host or setting `ansible_become=true` to prevent
 unnecessary ownership changes and errors.
 

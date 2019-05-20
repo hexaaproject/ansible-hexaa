@@ -1,0 +1,58 @@
+- when update:
+  - load:
+    {% for metadata in pyff_metadata -%}
+     - {{ metadata }}
+    {% endfor %}
+  {% if pyff_metadata_entities_to_be_removed is defined -%}
+  {% for entity in pyff_metadata_entities_to_be_removed -%}
+  - fork and merge remove:
+    - select:
+      - {{ entity }}
+  {% endfor -%}
+  {% endif -%}
+  #
+  {% if pyff_metadata_inject is defined -%}
+  - load:
+    {% for metadata in pyff_metadata_inject -%}
+    - {{ metadata }}
+    {% endfor -%}
+  {% endif -%}
+  #
+  - select
+  - pubinfo:
+      publisher: {{ publisher }}
+  - xslt:
+       stylesheet: tidy.xsl
+  - finalize:
+       cacheDuration: PT5H
+       validUntil: P10D
+  {% if pyff_metadata_signing -%}
+  - sign:
+      key: '/opt/pyff/certs/sign.key'
+      cert: '/opt/pyff/certs/sign.crt'
+  {% endif -%}
+  - stats
+  - break
+
+- when request:
+    - select
+    - pipe:
+        - when accept application/xml:
+             - xslt:
+                 stylesheet: tidy.xsl
+             - first
+             - finalize:
+                cacheDuration: PT5H
+                validUntil: P7D
+             {% if pyff_metadata_signing -%}
+             - sign:
+                 key: '/opt/pyff/certs/sign.key'
+                 cert: '/opt/pyff/certs/sign.crt'
+             {% endif -%}
+             - emit application/xml
+             - break
+        - when accept application/json:
+             - xslt:
+                 stylesheet: discojson.xsl
+             - emit application/json:
+             - break
