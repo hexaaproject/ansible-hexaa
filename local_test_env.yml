@@ -2,6 +2,16 @@
   hosts: local
   tags: [env]
   tasks:
+    - name: Create env network
+      docker_network:
+        name: hexaa_env
+      tags: [always]
+    - name: Read and set host IP
+      set_fact:
+        gateway_ip: "{{ docker_network.IPAM.Config[0].Gateway }}"
+      tags: [always]
+    - debug:
+        msg: "Local IP: {{ gateway_ip }}"
 
     - name: check if webserver cert exists
       stat:
@@ -121,8 +131,8 @@
           VIRTUAL_HOST: "{{ item.name }}"
           #MDX_URL:      "{{ MDX_URL }}"
           MDX_URL:   "http://{{ MDX_DOMAIN }}:8080"
-          SIMPLESAMLPHP_ADMIN_PASSWORD: "{{ SIMPLESAMLPHP_ADMIN_PASSWORD }}"
-          SIMPLESAMLPHP_SECRET_SALT:    "{{ SIMPLESAMLPHP_SECRET_SALT }}"
+          SIMPLESAMLPHP_ADMIN_PASSWORD: "{{ IDP_ADMIN_PASSWORD }}"
+          SIMPLESAMLPHP_SECRET_SALT:    "{{ IDP_SECRET_SALT }}"
         networks:
           - name: hexaa_env
         ports:
