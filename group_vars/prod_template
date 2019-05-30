@@ -1,8 +1,14 @@
 ---
+
+#: ==================
+# Docker and host settings
+#: ==================
+
 docker_network_name_backend:  hexaa_backend
 docker_network_name_frontend: hexaa_frontend
-docker_image_tag_frontend: latest
+
 docker_image_tag_backend:  latest
+docker_image_tag_frontend: latest
 
 docker_restart_policy: no
 
@@ -18,9 +24,9 @@ HEXAA_BACKEND_URL_HOST:    your-domain.tld
 HEXAA_BACKEND_URL_PATH:    /hexaa-backend/
 HEXAA_BACKEND_URL: "{{HEXAA_BACKEND_URL_PROTO}}://{{HEXAA_BACKEND_URL_HOST}}{{HEXAA_BACKEND_URL_PATH}}"
 
-HEXAA_FRONTEND_URL_PROTO:   https
-HEXAA_FRONTEND_URL_HOST:    "{{HEXAA_BACKEND_URL_HOST}}"
-HEXAA_FRONTEND_URL_PATH:    /
+HEXAA_FRONTEND_URL_PROTO:   "{{ HEXAA_BACKEND_URL_PROTO }}"
+HEXAA_FRONTEND_URL_HOST:    "{{ HEXAA_BACKEND_URL_HOST }}"
+HEXAA_FRONTEND_URL_PATH:    ""  # don't put a slash at the end
 HEXAA_FRONTEND_URL: "{{HEXAA_FRONTEND_URL_PROTO}}://{{HEXAA_FRONTEND_URL_HOST}}{{HEXAA_FRONTEND_URL_PATH}}"
 
 # enable generating self-signed certificates if the expected files don't exist
@@ -85,6 +91,8 @@ HEXAA_MAILER_PORT:      25
 HEXAA_MAILER_USER:      ~
 HEXAA_MAILER_PASSWORD:  ~
 
+HEXAA_BACKEND_FROM_ADDRESS: hexaa@example.com
+
 #: =====================
 # Memcached parameters
 #: =====================
@@ -106,9 +114,13 @@ HEXAA_MAILER_PASSWORD:  ~
 # You may set any number of keys by adding items to this mapping.
 
 HEXAA_BACKEND_MASTERKEY:
-  defaultMasterKey: "{{ --- REPLACE THIS --- }}"
-  # for SimpleSAMLPHP
+  defaultMasterKey: "{{ PROD_DEFAULT_MASTER_KEY }}"  # from vault
+  # for SimpleSAMLPHP AA
   otherMasterKey: "{{ --- REPLACE THIS --- }}"
+
+# path (relative to `files`) to dir that
+# contains the masterkey hooks
+#HEXAA_BACKEND_HOOK_DIR: prod_hooks
 
 #: =============
 # Hexaa admins
@@ -136,8 +148,6 @@ HEXAA_BACKEND_PRINCIPAL_EXPIRATION_LIMIT: 1839
 
 HEXAA_BACKEND_PUBLIC_ATTRIBUTE_SPECIFICATION_ENABLED: true
 
-HEXAA_BACKEND_FROM_ADDRESS: hexaa@example.com
-
 HEXAA_BACKEND_AUTH_COOKIE_NAME: hexaa_auth
 
 #SENTRY_DSN: ~
@@ -152,6 +162,7 @@ SSP_ORG_URL: https://your-company.tld/
 
 SSP_SECRET_SALT: --------REPLACE-THIS------------
 SSP_ADMIN_PASSWD: ~
+
 SSP_LOGLEVEL: DEBUG
 
 SSP_METADATA_PROVIDERS:

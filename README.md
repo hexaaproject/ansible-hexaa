@@ -11,10 +11,12 @@ Ansible playbook for installing a complete HEXAA environment.
         - [Hostname](#hostname)
         - [Running](#running)
         - [Web access](#web-access)
+        - [Possible errors](#possible-errors)
     - [Production environment](#production-environment)
         - [Running](#running-1)
         - [Backup](#backup)
 - [Development](#development)
+- [Architecture](#architecture)
 
 # Usage
 
@@ -87,6 +89,14 @@ can access the following services:
 * Metadata exchange: https://metadata.hexaa.local/
 * Local mail: https://mail.hexaa.local
 
+### Possible errors
+
+* If you have a firewall set up on your host, it can prevent
+  communication between the containers. If you use ufw, you should allow
+  this traffic: `ufw allow proto tcp from 172.16.0.0/12 to
+  172.16.0.0/12`, given that all docker networks are subnets of the
+  range.
+
 
 ## Production environment
 
@@ -102,7 +112,7 @@ If multiple people will run the playbook, we recommend using one user to
 login on the target host or setting `ansible_become=true` to prevent
 unnecessary ownership changes and errors.
 
-If you choose to latter, the login user(s) needs to have `sudo` rights
+If you choose the latter, the login user(s) needs to have `sudo` rights
 without password (`NOPASSWD` in `/etc/sudoers`) or you need to provide
 your password to Ansible: use the `--ask-become-pass` flag and enter it
 when asked.
@@ -138,7 +148,7 @@ git clone https://github.com/hexaaproject/ansible-role-hexaa-backend.git
 
 # Architecture
 
-Components installed by two main roles:
+Components installed by the two HEXAA roles:
 
 ![HEXAA core components](http://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_core.puml)
 

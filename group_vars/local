@@ -58,6 +58,7 @@ docker_etc_hosts: "{{ ETC_HOSTS }}"
 
 PROXY_CERTIFICATE_PATH: "{{ playbook_dir }}/local_files/nginx-proxy"
 
+
 #: ==================
 # Docker and host settings
 #: ==================
@@ -75,9 +76,6 @@ docker_restart_policy: no
 HEXAA_HOST_DIR: "{{ playbook_dir }}/local_files"
 
 mysql_root_password: root
-
-hexaa_backend_host_volume: /opt/hexaa-backend/
-hexaa_frontend_host_volume: /opt/hexaa-frontend/
 
 
 #: ==================
@@ -162,6 +160,8 @@ HEXAA_MAILER_PORT:      1025
 HEXAA_MAILER_USER:      ~
 HEXAA_MAILER_PASSWORD:  ~
 
+HEXAA_BACKEND_FROM_ADDRESS: hexaa@example.com
+
 #: =====================
 # Memcached parameters
 #: =====================
@@ -184,8 +184,12 @@ HEXAA_MAILER_PASSWORD:  ~
 
 HEXAA_BACKEND_MASTERKEY:
   defaultMasterKey: abcd
-  # for SimpleSAMLPHP
+  # for SimpleSAMLPHP AA
   otherMasterKey: xyzw
+
+# path (relative to `files`) to dir that
+# contains the masterkey hooks
+#HEXAA_BACKEND_HOOK_DIR: local_hooks
 
 #: =============
 # Hexaa admins
@@ -212,8 +216,6 @@ HEXAA_BACKEND_METADATA_SOURCE_URLS: "{{ LOCAL_MDX_DOCKER }}/entities"
 HEXAA_BACKEND_PRINCIPAL_EXPIRATION_LIMIT: 1839
 
 HEXAA_BACKEND_PUBLIC_ATTRIBUTE_SPECIFICATION_ENABLED: true
-
-HEXAA_BACKEND_FROM_ADDRESS: hexaa@example.com
 
 HEXAA_BACKEND_AUTH_COOKIE_NAME: hexaa_auth
 
