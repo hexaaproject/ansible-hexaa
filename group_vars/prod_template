@@ -10,7 +10,7 @@ docker_network_name_frontend: hexaa_frontend
 docker_image_tag_backend:  latest
 docker_image_tag_frontend: latest
 
-docker_restart_policy: no
+docker_restart_policy: unless-stopped
 
 mysql_root_password: root
 

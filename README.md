@@ -44,9 +44,11 @@ features. The `local.yml` playbook installs:
 * a local SMTP server with web interface for testing invitations and
   enabling services inside HEXAA.
 
-Your user needs to be a member of the `docker` group
+Your user needs to be a member of the `docker` group.
 
 ### Hostname
+
+By default, the services are configured to run under `hexaa.local`.
 
 You should add an entry like this to your `/etc/hosts` config:
 ```

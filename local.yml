@@ -1,17 +1,24 @@
 ---
 
-- import_playbook: local_test_env.yml
-
 - name: Install HEXAA to local host
   hosts: local
+  module_defaults:
+    docker_container:
+        pull: true
+        restart_policy: "{{ docker_restart_policy }}"
+  pre_tasks:
+    - name: Create env network
+      docker_network:
+        name: hexaa_env
+      tags: [always]
+    - name: Read and set host IP
+      set_fact:
+        gateway_ip: "{{ docker_network.IPAM.Config[0].Gateway }}"
+      tags: [always]
+    - debug:
+        msg: "Local IP: {{ gateway_ip }}"
   roles:
      - role: ansible-role-hexaa-backend
      - role: ansible-role-hexaa-frontend
 
-- name: Restart mdx  # so that it fetches metadata again
-  hosts: local
-  tasks:
-    - docker_container:
-        name: "metadata.{{ LOCAL_DOMAIN }}"
-        restart: yes
-      tags: [always]
+- import_playbook: test_env.yml

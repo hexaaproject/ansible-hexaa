@@ -2,4 +2,5 @@
 /roles/*
 !roles/.gitkeep
 .idea
+env
 VAULT_PASSWORD

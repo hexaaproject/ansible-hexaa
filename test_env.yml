@@ -1,18 +1,16 @@
+---
+
 - name: Local environment for testing HEXAA
   hosts: local
   tags: [env]
-  tasks:
-    - name: Create env network
-      docker_network:
-        name: hexaa_env
-      tags: [always]
-    - name: Read and set host IP
-      set_fact:
-        gateway_ip: "{{ docker_network.IPAM.Config[0].Gateway }}"
-      tags: [always]
-    - debug:
-        msg: "Local IP: {{ gateway_ip }}"
 
+  module_defaults:
+    docker_container:
+        pull: true
+        restart_policy: "{{ docker_restart_policy }}"
+        networks_cli_compatible: no
+
+  tasks:
     - name: check if webserver cert exists
       stat:
         path: "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.crt"
@@ -33,7 +31,9 @@
         path:             "{{ PROXY_CERTIFICATE_PATH }}/csr.csr"
         privatekey_path:  "{{ PROXY_CERTIFICATE_PATH }}/{{ LOCAL_DOMAIN }}.key"
         common_name:      "{{ LOCAL_DOMAIN }}"
-        subject_alt_name: "DNS:*.{{ LOCAL_DOMAIN }}"
+        subject_alt_name: "DNS:*.{{ LOCAL_DOMAIN }},DNS:{{ LOCAL_DOMAIN }}"
+        basic_constraints: ["CA:TRUE"]
+        basic_constraints_critical: true
       when:
         - not webserver_cert.stat.exists
     - name: Generate a Self Signed OpenSSL certificate
@@ -48,9 +48,7 @@
     - name: Ensure nginx-proxy container is started
       docker_container:
         name: nginx-proxy
-        image: jwilder/nginx-proxy
-        pull: true
-        restart_policy: no
+        image: jwilder/nginx-proxy:alpine
         ports:
           - "127.0.0.1:{{ LOCAL_PORT_HTTP }}:80"
           - "{{ gateway_ip }}:{{ LOCAL_PORT_HTTP }}:80"
@@ -64,8 +62,6 @@
       docker_container:
         name: "mail.{{ LOCAL_DOMAIN }}"
         image: mailhog/mailhog:latest
-        pull: true
-        restart_policy: no
         ports:
           - "127.0.0.1:1025:1025"
           - "127.0.0.1:8025:8025"
@@ -99,9 +95,6 @@
       docker_container:
         name: "metadata.{{ LOCAL_DOMAIN }}"
         image: leifj/pyff:latest
-        pull: true
-        restart: true
-        restart_policy: no
         ports:
           - "127.0.0.1:8080:8080"
           - "127.0.0.1:8081:8080"
@@ -125,12 +118,9 @@
       docker_container:
         name: "{{ item.name }}"
         image: szabogyula/test-saml-idp
-        pull: true
-        restart_policy: no
         env:
           VIRTUAL_HOST: "{{ item.name }}"
-          #MDX_URL:      "{{ MDX_URL }}"
-          MDX_URL:   "http://{{ MDX_DOMAIN }}:8080"
+          MDX_URL:      "{{ LOCAL_MDX_DOCKER }}"
           SIMPLESAMLPHP_ADMIN_PASSWORD: "{{ IDP_ADMIN_PASSWORD }}"
           SIMPLESAMLPHP_SECRET_SALT:    "{{ IDP_SECRET_SALT }}"
         networks:
@@ -154,7 +144,7 @@
 
         DISCOVERY_URL: "{{ LOCAL_PROTO }}://metadata.hexaa.local:{{ LOCAL_PORT }}/role/idp.ds"
         #DYNAMIC_METADATA_PROVIDER: "http://metadata.hexaa.local:{{ LOCAL_PORT }}/entities"
-        DYNAMIC_METADATA_PROVIDER: "http://metadata.hexaa.local:8080/entities/"
+        DYNAMIC_METADATA_PROVIDER: "{{ LOCAL_MDX_DOCKER }}/entities/"
         ATTRIBUTE_RESOLVERS:         "{{ SP_ATTRIBUTE_RESOLVERS }}"
         SUPPORT_CONTACT: "{{ item.name }}@{{ LOCAL_DOMAIN }}"
         SUPPORT_CONTACT_SURNAME: "{{ item.name }} support"

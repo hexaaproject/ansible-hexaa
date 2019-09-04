@@ -48,12 +48,13 @@ SP1_ENTITY_ID: "{{ LOCAL_PROTO }}://{{ SP1_DOMAIN }}:{{ LOCAL_PORT }}/shibboleth
 SP2_ENTITY_ID: "{{ LOCAL_PROTO }}://{{ SP2_DOMAIN }}:{{ LOCAL_PORT }}/shibboleth"
 SP_ATTRIBUTE_RESOLVERS: "<AttributeResolver type='SimpleAggregation' attributeId='principalName' format='urn:oid:1.3.6.1.4.1.5923.1.1.1.6'><Entity>{{ SSP_ENTITY_ID }}</Entity><Attribute Name='urn:oid:1.3.6.1.4.1.5923.1.1.1.7' NameFormat='urn:oasis:names:tc:SAML:2.0:attrname-format:uri' FriendlyName='eduPersonEntitlement'/></AttributeResolver>"
 
-ETC_HOSTS:
-    hexaa.local: "{{ gateway_ip }}"
-    idp1.hexaa.local: "{{ gateway_ip }}"
-    idp2.hexaa.local: "{{ gateway_ip }}"
-    sp1.hexaa.local: "{{ gateway_ip }}"
-    sp2.hexaa.local: "{{ gateway_ip }}"
+ETC_HOSTS: "{
+    '{{ LOCAL_DOMAIN }}': '{{ gateway_ip }}',
+    '{{ IDP1_DOMAIN }}':  '{{ gateway_ip }}',
+    '{{ IDP2_DOMAIN }}':  '{{ gateway_ip }}',
+    '{{ SP1_DOMAIN }}':   '{{ gateway_ip }}',
+    '{{ SP2_DOMAIN }}':   '{{ gateway_ip }}'
+}"
 docker_etc_hosts: "{{ ETC_HOSTS }}"
 
 PROXY_CERTIFICATE_PATH: "{{ playbook_dir }}/local_files/nginx-proxy"
@@ -71,7 +72,7 @@ docker_image_tag_backend:   staging
 docker_image_name_frontend: hexaaproject/hexaa-frontend
 docker_image_tag_frontend:  staging
 
-docker_restart_policy: no
+docker_restart_policy: "no"
 
 HEXAA_HOST_DIR: "{{ playbook_dir }}/local_files"
 
@@ -155,7 +156,7 @@ SHIBBOLETH_METADATA_PROVIDERS:
 # Mailer parameters
 #: ==================
 HEXAA_MAILER_TRANSPORT: smtp
-HEXAA_MAILER_HOST:      mail.hexaa.local
+HEXAA_MAILER_HOST:      "mail.{{ LOCAL_DOMAIN }}"
 HEXAA_MAILER_PORT:      1025
 HEXAA_MAILER_USER:      ~
 HEXAA_MAILER_PASSWORD:  ~
@@ -184,7 +185,7 @@ HEXAA_BACKEND_FROM_ADDRESS: hexaa@example.com
 
 HEXAA_BACKEND_MASTERKEY:
   defaultMasterKey: abcd
-  # for SimpleSAMLPHP AA
+  # for SimpleSAMLphp AA
   otherMasterKey: xyzw
 
 # path (relative to `files`) to dir that
@@ -196,6 +197,8 @@ HEXAA_BACKEND_MASTERKEY:
 #: =============
 HEXAA_BACKEND_ADMINS:
   - betauser@example.com
+  - "user1@{{ IDP1_DOMAIN }}"
+  - "user1@{{ IDP2_DOMAIN }}"
 
 #: ==============
 # Misc settings
@@ -207,7 +210,7 @@ HEXAA_BACKEND_SECRET:
 # More origin strings may be provided with the HEXAA_BACKEND_CORS_ORIGIN_ prefix.
 HEXAA_BACKEND_CORS_ORIGIN_DEFAULT: nullstring
 
-HEXAA_BACKEND_ENTITLEMENT_URI_PREFIX: urn:org:hexaa.local:hexaa
+HEXAA_BACKEND_ENTITLEMENT_URI_PREFIX: "urn:org:{{ LOCAL_DOMAIN }}:hexaa"
 
 # comma separated list:
 HEXAA_BACKEND_METADATA_SOURCE_URLS: "{{ LOCAL_MDX_DOCKER }}/entities"
