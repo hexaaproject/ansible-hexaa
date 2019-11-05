@@ -19,6 +19,9 @@
         msg: "Local IP: {{ gateway_ip }}"
   roles:
      - role: ansible-role-hexaa-backend
+       tags: backend
      - role: ansible-role-hexaa-frontend
+       tags: frontend
+     - role: ansible-role-hexaa-test-env
+       tags: testenv
 
-- import_playbook: test_env.yml

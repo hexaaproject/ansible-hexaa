@@ -5,6 +5,8 @@
   scm: git
 - src: https://github.com/hexaaproject/ansible-role-hexaa-backend.git
   scm: git
+- src: https://github.com/hexaaproject/ansible-role-hexaa-test-env.git
+  scm: git
 
 - src: https://github.com/hexaaproject/ansible-role-attributes.git
   scm: git
