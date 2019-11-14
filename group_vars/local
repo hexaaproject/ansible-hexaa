@@ -40,7 +40,7 @@ DS_METADATA_SOURCES:
     - "{{ LOCAL_PROTO }}://{{ IDP2_DOMAIN }}/simplesaml/saml2/idp/metadata.php"
     # HEXAA frontend:
     - "{{ LOCAL_PROTO }}://{{ LOCAL_DOMAIN }}/Shibboleth.sso/Metadata"
-    - https://{{ LOCAL_DOMAIN }}:8443/simplesaml/module.php/aa/metadata.php
+    - "https://{{ LOCAL_DOMAIN }}:8443/simplesaml/module.php/aa/metadata.php"
 
 SP1_DOMAIN: "sp1.{{ LOCAL_DOMAIN }}"
 SP2_DOMAIN: "sp2.{{ LOCAL_DOMAIN }}"

@@ -1,11 +1,37 @@
 ---
 
+- name: Install Docker
+  hosts: local
+  roles:
+    - name: geerlingguy.docker
+      become: true
+      failed_when: no
+    - name: geerlingguy.pip
+      become: true
+      vars:
+        pip_package: python3-pip
+        pip_install_packages:
+          - name: docker
+          - name: pyopenssl
+  tasks:
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        append: yes
+        groups:
+          - docker
+      become: true
+    - name: reset ssh connection to make user changes effective
+      meta: reset_connection
+
+
 - name: Install HEXAA to local host
   hosts: local
   module_defaults:
     docker_container:
         pull: true
         restart_policy: "{{ docker_restart_policy }}"
+        networks_cli_compatible: no
   pre_tasks:
     - name: Create env network
       docker_network:

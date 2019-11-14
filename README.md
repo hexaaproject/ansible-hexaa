@@ -21,8 +21,9 @@ Ansible playbook for installing a complete HEXAA environment.
 # Usage
 
 Requirements:
-- a recent version of Docker (`docker.io` or `docker-ce` package)
-- Ansible (`pip3 install ansible\>=2.7`)
+- ~~a recent version of Docker (`docker.io` or `docker-ce` package)~~
+  &#8594; the playbook installs these
+- Ansible (`pip3 install ansible\>=2.8`)
 
 Installing the roles:
 
@@ -44,7 +45,9 @@ features. The `local.yml` playbook installs:
 * a local SMTP server with web interface for testing invitations and
   enabling services inside HEXAA.
 
-Your user needs to be a member of the `docker` group.
+Your user needs to be a member of the `docker` group. The playbook sets
+this up for you, but `sudo` rights are needed for this. You can remove
+the first play of the `local.yml` playbook and add your user manually.
 
 ### Hostname
 
