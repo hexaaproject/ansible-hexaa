@@ -23,6 +23,7 @@ Ansible playbook for installing a complete HEXAA environment.
 Requirements:
 - ~~a recent version of Docker (`docker.io` or `docker-ce` package)~~
   &#8594; the playbook installs these
+- Python3 with pip (`python3-pip` on Debian-based distros)
 - Ansible (`pip3 install ansible\>=2.8`)
 
 Installing the roles:
@@ -48,6 +49,10 @@ features. The `local.yml` playbook installs:
 Your user needs to be a member of the `docker` group. The playbook sets
 this up for you, but `sudo` rights are needed for this. You can remove
 the first play of the `local.yml` playbook and add your user manually.
+
+If your user was added to the `docker` group now, you need to re-login
+or run ansible commands with:
+`sg docker "<ansible command>"`
 
 ### Hostname
 
@@ -101,6 +106,9 @@ can access the following services:
   this traffic: `ufw allow proto tcp from 172.16.0.0/12 to
   172.16.0.0/12`, given that all docker networks are subnets of the
   range.
+* The installation of pyopenssl Python module might fail (on older
+  Ubuntu systems), install the `python3-cryptography` or `libssl-dev`
+  package to fix this.
 
 
 ## Production environment

@@ -21,8 +21,14 @@
         groups:
           - docker
       become: true
-    - name: reset ssh connection to make user changes effective
-      meta: reset_connection
+      notify:
+        - fail playbook
+  handlers:
+    - name: fail playbook
+      fail:
+        msg: >
+          Your user was added to the `docker` group, re-login or run ansible
+          with `sg docker 'ansible-playbook ...'`
 
 
 - name: Install HEXAA to local host
