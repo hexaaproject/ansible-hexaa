@@ -47,12 +47,31 @@ features. The `local.yml` playbook installs:
   enabling services inside HEXAA.
 
 Your user needs to be a member of the `docker` group. The playbook sets
-this up for you, but `sudo` rights are needed for this. You can remove
-the first play of the `local.yml` playbook and add your user manually.
+this up for you, but `sudo` rights are needed for this (see
+`--ask-become-pass`). You can remove the first play of the `local.yml`
+playbook and add your user manually.
 
 If your user was added to the `docker` group now, you need to re-login
 or run ansible commands with:
 `sg docker "<ansible command>"`
+
+The used docker images take up about 4GB:
+```
+REPOSITORY                                       TAG                 IMAGE ID            CREATED             SIZE
+hexaaproject/hexaa-frontend                      staging             95a0e653d65d        2 days ago          535MB
+hexaaproject/hexaa-backend                       staging             01150b3d92f9        2 days ago          605MB
+mariadb                                          latest              c1c9e6fba07a        2 days ago          355MB
+memcached                                        latest              829146221029        3 days ago          82.2MB
+jwilder/nginx-proxy                              alpine              1aa571816748        7 days ago          54.5MB
+nginx                                            latest              540a289bab6c        3 weeks ago         126MB
+hexaaproject/ssp-aa                              latest              c5d739bc29b2        2 months ago        463MB
+hexaaproject/hexaa-service-entityids-generator   latest              f8b3e7021d87        4 months ago        93.6MB
+hexaaproject/apache-shib                         latest              683d18789660        4 months ago        199MB
+szabogyula/attributes                            latest              43ab8f0e81d9        6 months ago        479MB
+szabogyula/test-saml-idp                         latest              f366ec85803a        8 months ago        435MB
+mailhog/mailhog                                  latest              e00a21e210f9        13 months ago       19.2MB
+leifj/pyff                                       latest              e9ff2d9b8164        3 years ago         629MB
+```
 
 ### Hostname
 
@@ -157,6 +176,7 @@ git clone https://github.com/hexaaproject/ansible-hexaa.git
 cd ansible-hexaa/roles
 git clone https://github.com/hexaaproject/ansible-role-hexaa-frontend.git
 git clone https://github.com/hexaaproject/ansible-role-hexaa-backend.git
+git clone https://github.com/hexaaproject/ansible-role-hexaa-test-env.git
 ```
 
 # Architecture

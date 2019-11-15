@@ -51,7 +51,7 @@ package "Hexaa local env" {
         [mail]
         note top: MailHog
     }
-    note top of env: local_test_env.yml + ansible-role-attributes
+    note top of env: ansible-role-hexaa-test-env + ansible-role-attributes
 
 }
 @enduml
