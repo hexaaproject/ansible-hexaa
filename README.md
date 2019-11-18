@@ -57,20 +57,20 @@ or run ansible commands with:
 
 The used docker images take up about 4GB:
 ```
-REPOSITORY                                       TAG                 IMAGE ID            CREATED             SIZE
-hexaaproject/hexaa-frontend                      staging             95a0e653d65d        2 days ago          535MB
-hexaaproject/hexaa-backend                       staging             01150b3d92f9        2 days ago          605MB
-mariadb                                          latest              c1c9e6fba07a        2 days ago          355MB
-memcached                                        latest              829146221029        3 days ago          82.2MB
-jwilder/nginx-proxy                              alpine              1aa571816748        7 days ago          54.5MB
-nginx                                            latest              540a289bab6c        3 weeks ago         126MB
-hexaaproject/ssp-aa                              latest              c5d739bc29b2        2 months ago        463MB
-hexaaproject/hexaa-service-entityids-generator   latest              f8b3e7021d87        4 months ago        93.6MB
-hexaaproject/apache-shib                         latest              683d18789660        4 months ago        199MB
-szabogyula/attributes                            latest              43ab8f0e81d9        6 months ago        479MB
-szabogyula/test-saml-idp                         latest              f366ec85803a        8 months ago        435MB
-mailhog/mailhog                                  latest              e00a21e210f9        13 months ago       19.2MB
-leifj/pyff                                       latest              e9ff2d9b8164        3 years ago         629MB
+REPOSITORY                                       TAG       IMAGE ID       CREATED        SIZE
+hexaaproject/hexaa-frontend                      staging   95a0e653d65d   2 days ago     535MB
+hexaaproject/hexaa-backend                       staging   01150b3d92f9   2 days ago     605MB
+mariadb                                          latest    c1c9e6fba07a   2 days ago     355MB
+memcached                                        latest    829146221029   3 days ago     82.2MB
+jwilder/nginx-proxy                              alpine    1aa571816748   7 days ago     54.5MB
+nginx                                            latest    540a289bab6c   3 weeks ago    126MB
+hexaaproject/ssp-aa                              latest    c5d739bc29b2   2 months ago   463MB
+hexaaproject/hexaa-service-entityids-generator   latest    f8b3e7021d87   4 months ago   93.6MB
+hexaaproject/apache-shib                         latest    683d18789660   4 months ago   199MB
+szabogyula/attributes                            latest    43ab8f0e81d9   6 months ago   479MB
+szabogyula/test-saml-idp                         latest    f366ec85803a   8 months ago   435MB
+mailhog/mailhog                                  latest    e00a21e210f9   13 months ago  19.2MB
+leifj/pyff                                       latest    e9ff2d9b8164   3 years ago    629MB
 ```
 
 ### Hostname
@@ -181,7 +181,7 @@ git clone https://github.com/hexaaproject/ansible-role-hexaa-test-env.git
 
 # Architecture
 
-Components installed by the two HEXAA roles:
+Components installed by the three HEXAA roles:
 
 ![HEXAA core components](http://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_core.puml)
 

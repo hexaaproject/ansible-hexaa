@@ -1,0 +1,31 @@
+---
+
+- name: Install Docker
+  hosts: all
+  roles:
+    - name: geerlingguy.docker
+      become: true
+      failed_when: no
+    - name: geerlingguy.pip
+      become: true
+      vars:
+        pip_package: python3-pip
+        pip_install_packages:
+          - name: docker
+          - name: pyopenssl
+  tasks:
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        append: yes
+        groups:
+          - docker
+      become: true
+      notify:
+        - fail playbook
+  handlers:
+    - name: fail playbook
+      fail:
+        msg: >
+          Your user was added to the `docker` group, re-login or run ansible
+          with `sg docker 'ansible-playbook ...'`

@@ -2,4 +2,4 @@
 localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
 
 [prod]
-your-prod-host.domain ansible_become=true
+#your-prod-host.domain ansible_become=true
