@@ -21,10 +21,12 @@ Ansible playbook for installing a complete HEXAA environment.
 # Usage
 
 Requirements:
-- ~~a recent version of Docker (`docker.io` or `docker-ce` package)~~
-  &#8594; the playbook installs these
-- Python3 with pip (`python3-pip` on Debian-based distros)
-- Ansible (`pip3 install ansible\>=2.8`)
+- **target and control:** Python3 with pip (`python3-pip` on Debian-based distros)
+- **target**: a recent version of Docker engine (`docker.io` or
+  `docker-ce` package) and Python packages
+  (`pip3 install docker pyopenssl`), the playbook installs these unless
+  you skip the `docker` tag
+- **control machine:** Ansible (`pip3 install ansible\>=2.8`)
 
 Installing the roles:
 
@@ -48,8 +50,9 @@ features. The `local.yml` playbook installs:
 
 Your user needs to be a member of the `docker` group. The playbook sets
 this up for you, but `sudo` rights are needed for this (see
-`--ask-become-pass`). You can remove the first play of the `local.yml`
-playbook and add your user manually.
+`--ask-become-pass`). You can add `--skip-tags docker` to the ansible
+command, and manually install docker (`docker.io`/`docker-ce` OS package
+**and** the `docker`, `pyopenssl`  pip packages), add your user.
 
 If your user was added to the `docker` group now, you need to re-login
 or run ansible commands with:
@@ -98,7 +101,8 @@ docker rm -f sp1.hexaa.local sp2.hexaa.local \
     metadata.hexaa.local nginx-proxy \
     hexaa-backend hexaa-backend-ssp-aa hexaa-backend-web \
     hexaa-frontend hexaa-frontend-web \
-    hexaa-service-entityids-generator
+    hexaa-service-entityids-generator \
+    mail.hexaa.local memcached mysql
 find local_files -type f \! -name '.git*' -exec rm {} \;
 ```
 
@@ -132,7 +136,7 @@ can access the following services:
 
 ## Production environment
 
-Your should:
+You should:
 
  * Copy and customize `group_vars/prod_template`,
  * Copy `prod_template.yml` to a matching name,
@@ -183,8 +187,8 @@ git clone https://github.com/hexaaproject/ansible-role-hexaa-test-env.git
 
 Components installed by the three HEXAA roles:
 
-![HEXAA core components](http://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_core.puml)
+![HEXAA core components](https://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_core.puml)
 
 Local environment components and their (somewhat simplified) interactions:
 
-![HEXAA environment components](http://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_env.puml)
+![HEXAA environment components](https://www.plantuml.com/plantuml/proxy?cache=no&fmt=svg&src=https://raw.github.com/hexaaproject/ansible-hexaa/master/doc/hexaa_env.puml)

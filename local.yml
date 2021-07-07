@@ -2,6 +2,7 @@
 
 - name: Install docker env
   import_playbook: docker.yml
+  tags: docker
 
 - name: Install HEXAA to local host
   hosts: local
