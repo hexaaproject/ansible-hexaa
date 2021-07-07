@@ -1,3 +1,4 @@
+roles:
 - geerlingguy.docker
 - geerlingguy.pip
 
@@ -12,3 +13,7 @@
   scm: git
 - src: https://github.com/hexaaproject/ansible-role-idp.git
   scm: git
+
+collections:
+  - name: ansible.builtin
+  - name: community.docker

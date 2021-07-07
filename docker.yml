@@ -2,10 +2,13 @@
 
 - name: Install Docker
   hosts: all
+  tags: docker
   roles:
     - name: geerlingguy.docker
       become: true
       failed_when: no
+      vars:
+        docker_install_compose: false
     - name: geerlingguy.pip
       become: true
       vars:

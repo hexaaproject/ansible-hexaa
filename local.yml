@@ -16,9 +16,10 @@
       docker_network:
         name: hexaa_env
       tags: [always]
+      register: env_network
     - name: Read and set host IP
       set_fact:
-        gateway_ip: "{{ docker_network.IPAM.Config[0].Gateway }}"
+        gateway_ip: "{{ env_network.network.IPAM.Config[0].Gateway }}"
       tags: [always]
     - debug:
         msg: "Local IP: {{ gateway_ip }}"
